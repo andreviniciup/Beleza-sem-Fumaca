@@ -6,14 +6,20 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'sua_chave_secreta_aqui_mude_para_producao'
     
-    # Configuração do banco de dados
+    # Configuração do banco de dados com fallback inteligente
+    @staticmethod
     def get_database_uri():
         database_url = os.environ.get('DATABASE_URL')
         if database_url:
-            # Railway usa postgres://, mas SQLAlchemy precisa postgresql://
-            if database_url.startswith('postgres://'):
-                database_url = database_url.replace('postgres://', 'postgresql://', 1)
-            return database_url
+            try:
+                # Railway usa postgres://, mas SQLAlchemy precisa postgresql://
+                if database_url.startswith('postgres://'):
+                    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+                return database_url
+            except Exception as e:
+                print(f"⚠️ Erro ao configurar PostgreSQL: {e}")
+                print("🔄 Usando SQLite como fallback")
+                return 'sqlite:///quiz.db'
         return 'sqlite:///quiz.db'  # Fallback para SQLite
     
     SQLALCHEMY_DATABASE_URI = get_database_uri()
