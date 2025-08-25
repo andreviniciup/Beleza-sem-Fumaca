@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Beleza sem Fumaça - Quiz{% endblock %}
+
+{% block content %}
+<div class="w-full min-h-screen bg-background flex justify-center items-center px-[22px] py-[61px] overflow-hidden">
+    <div class="w-full max-w-[345px] flex flex-col items-start gap-[129px]">
+        <!-- Conteúdo principal -->
+        <div class="w-full flex flex-col justify-center items-center gap-[89px]">
+            <!-- Barra de progresso -->
+            <div class="w-full flex justify-start items-center gap-[5px]">
+                <div class="w-[45px] h-[10px] bg-secondary rounded-[17px]" id="progress1"></div>
+                <div class="w-[45px] h-[10px] bg-secondary rounded-[17px]" id="progress2"></div>
+                <div class="w-[45px] h-[10px] bg-secondary rounded-[17px]" id="progress3"></div>
+                <div class="w-[45px] h-[10px] bg-secondary rounded-[17px]" id="progress4"></div>
+                <div class="w-[45px] h-[10px] bg-[#D9D9D9] rounded-[17px]" id="progress5"></div>
+                <div class="w-[45px] h-[10px] bg-[#D9D9D9] rounded-[17px]" id="progress6"></div>
+                <div class="w-[45px] h-[10px] bg-[#D9D9D9] rounded-[17px]" id="progress7"></div>
+            </div>
+            
+            <!-- Pergunta -->
+            <div class="p-2.5 rounded-[10px] flex justify-center items-center">
+                <div class="text-center text-black text-xl font-alexandria font-medium" id="pergunta">
+                    Carregando pergunta...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Alternativas -->
+        <div class="w-[328px] flex flex-col items-start gap-[10px]" id="alternativas">
+            <!-- Alternativas serão inseridas aqui via JavaScript -->
+        </div>
+        
+        <!-- Botão próxima questão -->
+        <button class="w-[330px] px-[79px] py-2.5 bg-secondary rounded-[20px] flex justify-center items-center transition-all duration-300 hover:bg-[#3A5A3A] disabled:opacity-50 disabled:cursor-not-allowed" 
+                id="btnProximo" 
+                disabled>
+            <div class="text-center text-white text-xl font-alexandria font-medium">
+                Próximo Questão
+            </div>
+        </button>
+    </div>
+</div>
+
+<!-- Loading inicial -->
+<div class="loading fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden" id="loadingInicial">
+    <div class="bg-white rounded-lg p-6 flex flex-col items-center">
+        <div class="spinner-border w-8 h-8" role="status">
+            <span class="sr-only">Carregando...</span>
+        </div>
+        <p class="mt-3 text-sm text-text-light">Carregando questões...</p>
+    </div>
+</div>
+
+<!-- Loading final -->
+<div class="loading fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden" id="loadingFinal">
+    <div class="bg-white rounded-lg p-6 flex flex-col items-center">
+        <div class="spinner-border w-8 h-8" role="status">
+            <span class="sr-only">Processando...</span>
+        </div>
+        <p class="mt-3 text-sm text-text-light">Processando suas respostas...</p>
+    </div>
+</div>
+
+<!-- Erro -->
+<div class="alert alert-danger fixed top-4 left-4 right-4 z-50" id="erro" style="display: none;">
+    <div class="flex items-center">
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span id="mensagemErro" class="text-sm"></span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let questoes = [];
+let questaoAtual = 0;
+let respostas = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Quiz carregado, iniciando carregamento de questões...');
+    carregarQuestoes();
+});
+
+// Função para mostrar loading inicial
+function mostrarLoadingInicial() {
+    console.log('Mostrando loading inicial...');
+    const loading = document.getElementById('loadingInicial');
+    loading.classList.remove('hidden');
+    loading.style.display = 'flex';
+}
+
+// Função para esconder loading inicial
+function esconderLoadingInicial() {
+    console.log('Escondendo loading inicial...');
+    const loading = document.getElementById('loadingInicial');
+    loading.classList.add('hidden');
+    loading.style.display = 'none';
+}
+
+// Função para mostrar loading final
+function mostrarLoadingFinal() {
+    console.log('Mostrando loading final...');
+    const loading = document.getElementById('loadingFinal');
+    loading.classList.remove('hidden');
+    loading.style.display = 'flex';
+}
+
+// Função para esconder loading final
+function esconderLoadingFinal() {
+    console.log('Escondendo loading final...');
+    const loading = document.getElementById('loadingFinal');
+    loading.classList.add('hidden');
+    loading.style.display = 'none';
+}
+
+async function carregarQuestoes() {
+    try {
+        console.log('Fazendo requisição para /api/obter_questoes...');
+        mostrarLoadingInicial();
+        
+        const response = await fetch('/api/obter_questoes');
+        const data = await response.json();
+        
+        console.log('Response status:', response.status);
+        console.log('Questões recebidas:', data.questoes ? data.questoes.length : 0);
+        
+        if (response.ok) {
+            questoes = data.questoes;
+            esconderLoadingInicial();
+            mostrarQuestao();
+        } else {
+            throw new Error(data.erro || 'Erro ao carregar questões');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar questões:', error);
+        esconderLoadingInicial();
+        mostrarErro(error.message);
+    }
+}
+
+function mostrarQuestao() {
+    const pergunta = document.getElementById('pergunta');
+    const alternativas = document.getElementById('alternativas');
+    const btnProximo = document.getElementById('btnProximo');
+    
+    console.log(`Mostrando questão ${questaoAtual + 1} de ${questoes.length}`);
+    
+    // Atualizar progresso
+    atualizarProgresso();
+    
+    // Mostrar pergunta
+    const questao = questoes[questaoAtual];
+    pergunta.textContent = questao.pergunta;
+    
+    // Limpar alternativas anteriores
+    alternativas.innerHTML = '';
+    
+    // Criar alternativas
+    const opcoesArray = Object.entries(questao.opcoes);
+    opcoesArray.forEach(([letra, texto]) => {
+        const alternativa = document.createElement('div');
+        alternativa.className = 'w-full h-[60px] px-[30px] py-5 bg-[#E7E7E7] rounded-[15px] border border-[#DDDDDD] flex flex-col justify-start items-start cursor-pointer transition-all duration-300 hover:border-text-light';
+        alternativa.dataset.opcao = letra;
+        
+        alternativa.innerHTML = `
+            <div class="flex justify-start items-center gap-[25px]">
+                <div class="w-5 h-5 rounded-full border-2 border-[#636363] flex justify-center items-center">
+                    <div class="w-[14px] h-[14px] bg-text-light rounded-full hidden"></div>
+                </div>
+                <div class="text-center text-[#262626] text-base font-alexandria font-normal">
+                    ${texto}
+                </div>
+            </div>
+        `;
+        
+        alternativa.addEventListener('click', function() {
+            selecionarOpcao(letra);
+        });
+        
+        alternativas.appendChild(alternativa);
+    });
+    
+    // Configurar botão
+    if (questaoAtual === questoes.length - 1) {
+        btnProximo.innerHTML = '<div class="text-center text-white text-xl font-alexandria font-medium">Finalizar Quiz</div>';
+    } else {
+        btnProximo.innerHTML = '<div class="text-center text-white text-xl font-alexandria font-medium">Próximo Questão</div>';
+    }
+    
+    btnProximo.disabled = true;
+}
+
+function atualizarProgresso() {
+    for (let i = 1; i <= 7; i++) {
+        const progressElement = document.getElementById(`progress${i}`);
+        if (i <= questaoAtual + 1) {
+            progressElement.className = 'w-[45px] h-[10px] bg-secondary rounded-[17px]';
+        } else {
+            progressElement.className = 'w-[45px] h-[10px] bg-[#D9D9D9] rounded-[17px]';
+        }
+    }
+}
+
+function selecionarOpcao(opcao) {
+    console.log(`Opção selecionada: ${opcao}`);
+    
+    // Remover seleção anterior
+    document.querySelectorAll('[data-opcao]').forEach(el => {
+        const radio = el.querySelector('.w-5.h-5');
+        const dot = el.querySelector('.w-\\[14px\\].h-\\[14px\\]');
+        radio.className = 'w-5 h-5 rounded-full border-2 border-[#636363] flex justify-center items-center';
+        dot.className = 'w-[14px] h-[14px] bg-text-light rounded-full hidden';
+        el.className = 'w-full h-[60px] px-[30px] py-5 bg-[#E7E7E7] rounded-[15px] border border-[#DDDDDD] flex flex-col justify-start items-start cursor-pointer transition-all duration-300 hover:border-text-light';
+    });
+    
+    // Selecionar nova opção
+    const opcaoElement = document.querySelector(`[data-opcao="${opcao}"]`);
+    const radio = opcaoElement.querySelector('.w-5.h-5');
+    const dot = opcaoElement.querySelector('.w-\\[14px\\].h-\\[14px\\]');
+    
+    radio.className = 'w-5 h-5 p-[3px] rounded-[10px] border-2 border-text-light flex justify-center items-center';
+    dot.className = 'w-[14px] h-[14px] bg-text-light rounded-full';
+    opcaoElement.className = 'w-full h-[60px] px-[30px] py-5 bg-[#E7E7E7] rounded-[15px] border-2 border-text-light flex flex-col justify-start items-start cursor-pointer';
+    
+    // Habilitar botão próximo
+    document.getElementById('btnProximo').disabled = false;
+    
+    // Salvar resposta
+    respostas[questaoAtual] = {
+        questao_id: questoes[questaoAtual].id,
+        resposta: opcao
+    };
+    
+    console.log('Resposta salva:', respostas[questaoAtual]);
+}
+
+document.getElementById('btnProximo').addEventListener('click', function() {
+    if (questaoAtual < questoes.length - 1) {
+        // Próxima questão
+        questaoAtual++;
+        mostrarQuestao();
+    } else {
+        // Finalizar quiz
+        finalizarQuiz();
+    }
+});
+
+async function finalizarQuiz() {
+    const btnProximo = document.getElementById('btnProximo');
+    
+    console.log('Finalizando quiz...');
+    console.log('Respostas:', respostas);
+    
+    // Verificar se todas as questões foram respondidas
+    if (respostas.length !== questoes.length) {
+        mostrarErro('Por favor, responda todas as questões antes de finalizar.');
+        return;
+    }
+    
+    // Mostrar loading
+    btnProximo.disabled = true;
+    mostrarLoadingFinal();
+    
+    try {
+        console.log('Enviando respostas para /api/enviar_respostas...');
+        
+        const response = await fetch('/api/enviar_respostas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                respostas: respostas
+            })
+        });
+        
+        console.log('Response status:', response.status);
+        
+        const result = await response.json();
+        console.log('Resultado:', result);
+        
+        if (response.ok) {
+            console.log('Sucesso! Redirecionando para /resultado...');
+            // Redirecionar para resultado
+            window.location.href = '/resultado';
+        } else {
+            throw new Error(result.erro || 'Erro ao processar respostas');
+        }
+        
+    } catch (error) {
+        console.error('Erro ao finalizar quiz:', error);
+        mostrarErro(error.message);
+        
+        // Esconder loading
+        esconderLoadingFinal();
+        btnProximo.disabled = false;
+    }
+}
+
+function mostrarErro(mensagem) {
+    const erro = document.getElementById('erro');
+    const mensagemErro = document.getElementById('mensagemErro');
+    
+    console.error('Erro:', mensagem);
+    
+    mensagemErro.textContent = mensagem;
+    erro.style.display = 'block';
+    
+    // Esconder após 5 segundos
+    setTimeout(() => {
+        erro.style.display = 'none';
+    }, 5000);
+}
+</script>
+{% endblock %}

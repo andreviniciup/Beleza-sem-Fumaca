@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Quiz Beleza que Respira{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Alexandria -->
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'alexandria': ['Alexandria', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#B67490',
+                        'secondary': '#446A46',
+                        'accent': '#FFC4DD',
+                        'text-light': '#82A284',
+                        'background': '#EDEDED',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Alexandria', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(0deg, #446A46 0%, #446A46 100%), #EDEDED;
+        }
+        
+        .btn-primary {
+            background: #B67490;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #A05A7A;
+            transform: translateY(-2px);
+        }
+        
+        .form-input {
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #B67490;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(182, 116, 144, 0.1);
+        }
+        
+        .quiz-option {
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .quiz-option:hover {
+            border-color: #B67490;
+            background: #FDF2F8;
+        }
+        
+        .quiz-option.selected {
+            border-color: #B67490;
+            background: #FDF2F8;
+            box-shadow: 0 5px 15px rgba(182, 116, 144, 0.2);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #B67490 0%, #FFC4DD 100%);
+            border-radius: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner-border {
+            color: #B67490;
+        }
+        
+        .alert {
+            border-radius: 15px;
+            border: none;
+        }
+        
+        .alert-danger {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+        
+        .alert-success {
+            background: #F0FDF4;
+            color: #16A34A;
+        }
+        
+        .alert-warning {
+            background: #FFFBEB;
+            color: #D97706;
+        }
+        
+        .alert-info {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen bg-background">
+    {% block content %}{% endblock %}
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
