@@ -70,89 +70,73 @@ http://localhost:5000
 
 ## 🚀 Deploy
 
-### Opção 1: Railway (Recomendado)
+### **Render + Railway (Recomendado)**
 
-1. **Crie uma conta no Railway:**
+#### **1. Configurar Banco PostgreSQL no Railway:**
+1. Acesse [railway.app](https://railway.app)
+2. Clique em "New Project" → "Provision PostgreSQL"
+3. Copie a URL de conexão do banco (formato: `postgresql://user:password@host:port/database`)
+
+#### **2. Configurar Aplicação no Render:**
+1. Acesse [render.com](https://render.com)
+2. Clique em "New +" → "Web Service"
+3. Conecte seu repositório GitHub
+4. Configure:
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `gunicorn wsgi:app`
+
+#### **3. Variáveis de Ambiente no Render:**
+```
+DATABASE_URL=postgresql://user:password@host:port/database
+SECRET_KEY=sua_chave_secreta_muito_segura_aqui_2024
+FLASK_ENV=production
+```
+
+#### **4. Deploy:**
+- Clique em "Create Web Service"
+- Aguarde o build (5-10 minutos)
+- Verifique os logs para confirmar que as tabelas foram criadas
+
+### **Verificar Deploy:**
+1. **Logs do Render:** Procure por:
+   - ✅ "Tabelas criadas com sucesso!"
+   - ✅ "Questões inseridas com sucesso!"
+   - ✅ "Build successful"
+
+2. **Testar aplicação:**
+   - Acesse o URL fornecido pelo Render
+   - Complete o quiz para testar o banco
+
+### **Troubleshooting:**
+- **Erro de conexão:** Verifique se `DATABASE_URL` está correta
+- **Tabelas não criadas:** Verifique os logs do Render
+- **Questões não inseridas:** Execute `python init_db.py` localmente primeiro
+
+### **URLs Importantes:**
+- **Render:** `https://quiz-beleza-que-respira.onrender.com`
+- **Railway:** `https://railway.app/project/[seu-projeto-id]`
+
+### **Opção Alternativa: Railway Completo**
+
+Se preferir usar apenas o Railway:
+
+1. **Criar projeto no Railway:**
    - Acesse [railway.app](https://railway.app)
-   - Faça login com GitHub
-
-2. **Conecte seu repositório:**
    - Clique em "New Project"
    - Selecione "Deploy from GitHub repo"
-   - Escolha seu repositório
 
-3. **Configure o banco PostgreSQL:**
+2. **Configurar PostgreSQL:**
    - Vá em "Variables"
-   - Adicione: `DATABASE_URL` (será gerado automaticamente)
+   - Adicione: `DATABASE_URL` (gerado automaticamente)
 
-4. **Configure as variáveis de ambiente:**
+3. **Configurar variáveis:**
    ```
    FLASK_ENV=production
    SECRET_KEY=sua_chave_secreta_muito_segura
    ```
 
-5. **Deploy automático:**
+4. **Deploy automático:**
    - O Railway fará deploy automático a cada push
-
-### Opção 2: Render
-
-1. **Crie uma conta no Render:**
-   - Acesse [render.com](https://render.com)
-   - Faça login com GitHub
-
-2. **Crie um novo Web Service:**
-   - Conecte seu repositório
-   - Configure:
-     - **Build Command:** `pip install -r requirements.txt`
-     - **Start Command:** `gunicorn wsgi:app`
-
-3. **Configure o banco PostgreSQL:**
-   - Crie um novo PostgreSQL database
-   - Copie a URL de conexão
-
-4. **Configure as variáveis de ambiente:**
-   ```
-   DATABASE_URL=sua_url_postgresql
-   FLASK_ENV=production
-   SECRET_KEY=sua_chave_secreta
-   ```
-
-### Opção 3: Heroku
-
-1. **Instale o Heroku CLI:**
-```bash
-# Windows
-winget install --id=Heroku.HerokuCLI
-
-# macOS
-brew tap heroku/brew && brew install heroku
-```
-
-2. **Faça login:**
-```bash
-heroku login
-```
-
-3. **Crie a aplicação:**
-```bash
-heroku create seu-quiz-app
-```
-
-4. **Configure o PostgreSQL:**
-```bash
-heroku addons:create heroku-postgresql:mini
-```
-
-5. **Configure as variáveis:**
-```bash
-heroku config:set FLASK_ENV=production
-heroku config:set SECRET_KEY=sua_chave_secreta
-```
-
-6. **Deploy:**
-```bash
-git push heroku main
-```
 
 ## 📊 Estrutura do Banco de Dados
 
