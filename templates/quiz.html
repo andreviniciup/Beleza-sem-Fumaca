@@ -160,7 +160,7 @@ function mostrarQuestao() {
     const opcoesArray = Object.entries(questao.opcoes);
     opcoesArray.forEach(([letra, texto]) => {
         const alternativa = document.createElement('div');
-        alternativa.className = 'w-full h-[60px] px-[30px] py-5 bg-[#E7E7E7] rounded-[15px] border border-[#DDDDDD] flex flex-col justify-start items-start cursor-pointer transition-all duration-300 hover:border-text-light';
+        alternativa.className = 'w-full h-[60px] px-[30px] py-5 quiz-option flex flex-col justify-start items-start cursor-pointer transition-all duration-300';
         alternativa.dataset.opcao = letra;
         
         alternativa.innerHTML = `
@@ -211,7 +211,7 @@ function selecionarOpcao(opcao) {
         const dot = el.querySelector('.w-\\[14px\\].h-\\[14px\\]');
         radio.className = 'w-5 h-5 rounded-full border-2 border-[#636363] flex justify-center items-center';
         dot.className = 'w-[14px] h-[14px] bg-text-light rounded-full hidden';
-        el.className = 'w-full h-[60px] px-[30px] py-5 bg-[#E7E7E7] rounded-[15px] border border-[#DDDDDD] flex flex-col justify-start items-start cursor-pointer transition-all duration-300 hover:border-text-light';
+        el.className = 'w-full h-[60px] px-[30px] py-5 quiz-option flex flex-col justify-start items-start cursor-pointer transition-all duration-300';
     });
     
     // Selecionar nova opção
@@ -221,7 +221,7 @@ function selecionarOpcao(opcao) {
     
     radio.className = 'w-5 h-5 p-[3px] rounded-[10px] border-2 border-text-light flex justify-center items-center';
     dot.className = 'w-[14px] h-[14px] bg-text-light rounded-full';
-    opcaoElement.className = 'w-full h-[60px] px-[30px] py-5 bg-[#E7E7E7] rounded-[15px] border-2 border-text-light flex flex-col justify-start items-start cursor-pointer';
+    opcaoElement.className = 'w-full h-[60px] px-[30px] py-5 quiz-option selected flex flex-col justify-start items-start cursor-pointer';
     
     // Habilitar botão próximo
     document.getElementById('btnProximo').disabled = false;

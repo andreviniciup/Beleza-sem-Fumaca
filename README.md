@@ -1,181 +1,267 @@
-# Quiz Beleza que Respira
+# Quiz Beleza sem Fumaça
 
-Uma aplicação Flask completa para um quiz interativo sobre cuidados com a pele, com sistema de cadastro, questões sorteadas e prêmios.
+Um quiz interativo sobre os efeitos do tabagismo na saúde e aparência, desenvolvido em Flask com interface moderna e responsiva.
 
 ## 🚀 Funcionalidades
 
-- **Tela de Boas-vindas**: Apresentação do quiz com instruções
-- **Formulário de Cadastro**: Coleta dados obrigatórios do usuário
-- **Quiz Dinâmico**: 7 questões sorteadas de um banco de ~50 questões
-- **Sistema de Correção**: Avaliação automática das respostas
-- **Resultados**: Exibição de pontuação e prêmios
-- **Banco de Dados**: Armazenamento de usuários, respostas e resultados
+- ✅ Quiz interativo com 50 questões reais sobre tabagismo
+- ✅ Interface moderna e responsiva
+- ✅ Sistema de cadastro de usuários
+- ✅ Armazenamento de respostas e resultados
+- ✅ Cálculo automático de pontuação
+- ✅ Sistema de brindes baseado no desempenho
+- ✅ Design mobile-first
+
+## 🛠️ Tecnologias
+
+- **Backend:** Flask, SQLAlchemy
+- **Frontend:** HTML5, CSS3, JavaScript, Tailwind CSS
+- **Banco de Dados:** SQLite (desenvolvimento) / PostgreSQL (produção)
+- **Deploy:** Railway, Render, Heroku, DigitalOcean
 
 ## 📋 Pré-requisitos
 
-- Python 3.7 ou superior
-- pip (gerenciador de pacotes Python)
+- Python 3.8+
+- pip
+- Git
 
-## 🛠️ Instalação
+## 🔧 Instalação Local
 
-1. **Clone o repositório**:
+1. **Clone o repositório:**
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/seu-usuario/quiz-beleza-que-respira.git
 cd quiz-beleza-que-respira
 ```
 
-2. **Instale as dependências**:
+2. **Crie um ambiente virtual:**
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# ou
+venv\Scripts\activate     # Windows
+```
+
+3. **Instale as dependências:**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Execute a aplicação**:
+4. **Configure as variáveis de ambiente:**
+```bash
+# Crie um arquivo .env baseado no .env.example
+cp .env.example .env
+# Edite o arquivo .env com suas configurações
+```
+
+5. **Execute o banco de dados:**
 ```bash
 python app.py
 ```
 
-4. **Acesse no navegador**:
+6. **Inserir as questões reais:**
+```bash
+python insert_questions.py
+```
+
+7. **Acesse a aplicação:**
 ```
 http://localhost:5000
 ```
 
-## 🗄️ Estrutura do Banco de Dados
-
-### Tabelas
-
-- **Usuario**: Dados pessoais dos participantes
-- **Questao**: Banco de questões do quiz
-- **Resposta**: Respostas individuais de cada usuário
-- **Resultado**: Resultados finais e prêmios
-
-### Campos Principais
-
-#### Usuario
-- `id`: Identificador único
-- `nome`: Nome completo
-- `idade`: Idade do participante
-- `genero`: Gênero (Feminino, Masculino, etc.)
-- `fonte_conhecimento`: Como ficou sabendo da ação
-- `data_cadastro`: Data e hora do cadastro
-
-#### Questao
-- `id`: Identificador único
-- `pergunta`: Texto da pergunta
-- `opcao_a`, `opcao_b`, `opcao_c`, `opcao_d`: Opções de resposta
-- `resposta_correta`: Letra da resposta correta (A, B, C ou D)
-
-#### Resposta
-- `id`: Identificador único
-- `usuario_id`: Referência ao usuário
-- `questao_id`: Referência à questão
-- `resposta_escolhida`: Opção escolhida pelo usuário
-- `esta_correta`: Se a resposta está correta
-- `data_resposta`: Data e hora da resposta
-
-#### Resultado
-- `id`: Identificador único
-- `usuario_id`: Referência ao usuário
-- `total_acertos`: Número de acertos
-- `total_questoes`: Total de questões (sempre 7)
-- `ganhou_brinde`: Se ganhou o prêmio
-- `data_resultado`: Data e hora do resultado
-
-## 🎯 Fluxo da Aplicação
-
-1. **Tela Inicial**: Boas-vindas e instruções
-2. **Cadastro**: Formulário obrigatório com validação
-3. **Quiz**: 7 questões sorteadas aleatoriamente
-4. **Correção**: Processamento automático das respostas
-5. **Resultado**: Exibição da pontuação e prêmios
-
-## 🏆 Sistema de Prêmios
-
-- **Ganha brinde**: Acertos > 3 (mais da metade das 7 questões)
-- **Não ganha**: Acertos ≤ 3
-
-## 🎨 Interface
-
-- Design responsivo com Bootstrap 5
-- Tema rosa/beauty com gradientes
-- Animações suaves e transições
-- Ícones Font Awesome
-- Loading states e feedback visual
-
-## 🔧 APIs
-
-### POST `/api/cadastrar_usuario`
-Cadastra um novo usuário no sistema.
-
-**Body:**
-```json
-{
-    "nome": "Nome Completo",
-    "idade": 25,
-    "genero": "Feminino",
-    "fonte_conhecimento": "Instagram"
-}
-```
-
-### GET `/api/obter_questoes`
-Retorna 7 questões sorteadas aleatoriamente.
-
-### POST `/api/enviar_respostas`
-Processa as respostas do usuário.
-
-**Body:**
-```json
-{
-    "respostas": [
-        {
-            "questao_id": 1,
-            "resposta": "A"
-        }
-    ]
-}
-```
-
-### GET `/api/obter_resultado`
-Retorna o resultado final do usuário.
-
-### POST `/api/limpar_sessao`
-Limpa os dados da sessão atual.
-
-## 📊 Relatórios e Estatísticas
-
-O banco de dados permite extrair informações como:
-- Total de participantes
-- Média de acertos
-- Fontes de conhecimento mais populares
-- Distribuição por gênero e idade
-- Taxa de ganhadores de prêmios
-
 ## 🚀 Deploy
 
-### Desenvolvimento
+### Opção 1: Railway (Recomendado)
+
+1. **Crie uma conta no Railway:**
+   - Acesse [railway.app](https://railway.app)
+   - Faça login com GitHub
+
+2. **Conecte seu repositório:**
+   - Clique em "New Project"
+   - Selecione "Deploy from GitHub repo"
+   - Escolha seu repositório
+
+3. **Configure o banco PostgreSQL:**
+   - Vá em "Variables"
+   - Adicione: `DATABASE_URL` (será gerado automaticamente)
+
+4. **Configure as variáveis de ambiente:**
+   ```
+   FLASK_ENV=production
+   SECRET_KEY=sua_chave_secreta_muito_segura
+   ```
+
+5. **Deploy automático:**
+   - O Railway fará deploy automático a cada push
+
+### Opção 2: Render
+
+1. **Crie uma conta no Render:**
+   - Acesse [render.com](https://render.com)
+   - Faça login com GitHub
+
+2. **Crie um novo Web Service:**
+   - Conecte seu repositório
+   - Configure:
+     - **Build Command:** `pip install -r requirements.txt`
+     - **Start Command:** `gunicorn wsgi:app`
+
+3. **Configure o banco PostgreSQL:**
+   - Crie um novo PostgreSQL database
+   - Copie a URL de conexão
+
+4. **Configure as variáveis de ambiente:**
+   ```
+   DATABASE_URL=sua_url_postgresql
+   FLASK_ENV=production
+   SECRET_KEY=sua_chave_secreta
+   ```
+
+### Opção 3: Heroku
+
+1. **Instale o Heroku CLI:**
 ```bash
-python app.py
+# Windows
+winget install --id=Heroku.HerokuCLI
+
+# macOS
+brew tap heroku/brew && brew install heroku
 ```
 
-### Produção
-Para deploy em produção, considere:
-- Usar WSGI server (Gunicorn, uWSGI)
-- Configurar variáveis de ambiente
-- Usar banco de dados PostgreSQL
-- Configurar HTTPS
-- Implementar logging
+2. **Faça login:**
+```bash
+heroku login
+```
 
-## 📝 Licença
+3. **Crie a aplicação:**
+```bash
+heroku create seu-quiz-app
+```
 
-Este projeto está sob a licença MIT.
+4. **Configure o PostgreSQL:**
+```bash
+heroku addons:create heroku-postgresql:mini
+```
 
-## 👥 Contribuição
+5. **Configure as variáveis:**
+```bash
+heroku config:set FLASK_ENV=production
+heroku config:set SECRET_KEY=sua_chave_secreta
+```
 
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
+6. **Deploy:**
+```bash
+git push heroku main
+```
+
+## 📊 Estrutura do Banco de Dados
+
+### Tabelas:
+
+- **usuarios:** Dados dos participantes
+- **questoes:** Banco de 50 questões sobre tabagismo
+- **respostas:** Respostas individuais dos usuários
+- **resultados:** Resultados finais e prêmios
+
+### Inserir Questões:
+
+```bash
+python insert_questions.py
+```
+
+## 🔧 Configuração de Produção
+
+### Variáveis de Ambiente Necessárias:
+
+```env
+DATABASE_URL=postgresql://user:pass@host:port/db
+SECRET_KEY=sua_chave_secreta_muito_segura
+FLASK_ENV=production
+```
+
+### Configurações de Segurança:
+
+1. **Altere a SECRET_KEY:**
+   ```python
+   import secrets
+   secrets.token_hex(32)
+   ```
+
+2. **Configure HTTPS:**
+   - Railway e Render já fornecem HTTPS automaticamente
+
+3. **Configure CORS se necessário:**
+   ```python
+   from flask_cors import CORS
+   CORS(app)
+   ```
+
+## 📱 Responsividade
+
+O projeto foi desenvolvido com design mobile-first e é totalmente responsivo:
+
+- ✅ Mobile (320px - 768px)
+- ✅ Tablet (768px - 1024px)
+- ✅ Desktop (1024px+)
+
+## 🎨 Personalização
+
+### Cores do Tema:
+```css
+--primary: #B67490      /* Rosa principal */
+--secondary: #446A46    /* Verde */
+--accent: #FFC4DD       /* Rosa claro */
+--text-light: #82A284   /* Verde claro */
+```
+
+### Fontes:
+- Alexandria (Google Fonts)
+
+## 📈 Monitoramento
+
+### Logs:
+- Railway: Dashboard integrado
+- Render: Logs automáticos
+- Heroku: `heroku logs --tail`
+
+### Métricas:
+- Acesse `/admin/dados` para ver estatísticas
+
+## 🐛 Troubleshooting
+
+### Problemas Comuns:
+
+1. **Erro de conexão com banco:**
+   - Verifique a URL do PostgreSQL
+   - Confirme se o banco está ativo
+
+2. **Erro de dependências:**
+   ```bash
+   pip install --upgrade -r requirements.txt
+   ```
+
+3. **Erro de migração:**
+   ```bash
+   python app.py  # Recria as tabelas
+   python insert_questions.py  # Reinsere as questões
+   ```
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
 ## 📞 Suporte
 
-Para dúvidas ou suporte, entre em contato através dos canais oficiais.
+Para suporte, envie um email para seu-email@exemplo.com ou abra uma issue no GitHub.
+
+---
+
+**Desenvolvido com ❤️ para conscientização sobre os efeitos do tabagismo**

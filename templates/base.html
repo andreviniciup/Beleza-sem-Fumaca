@@ -32,8 +32,16 @@
     </script>
     
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Alexandria', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
         
         .gradient-bg {
@@ -55,12 +63,46 @@
             border-radius: 15px;
             padding: 15px;
             transition: all 0.3s ease;
+            background: #82A284;
+            color: white;
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
         
         .form-input:focus {
             border-color: #B67490;
             outline: none;
             box-shadow: 0 0 0 3px rgba(182, 116, 144, 0.1);
+        }
+        
+        .form-select {
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            background: #82A284;
+            color: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+        
+        .form-select:focus {
+            border-color: #B67490;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(182, 116, 144, 0.1);
+        }
+        
+        .form-select option {
+            background: white;
+            color: #446A46;
+            padding: 10px;
         }
         
         .quiz-option {
@@ -70,18 +112,16 @@
             margin: 10px 0;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: white;
+            background: #E7E7E7;
         }
         
         .quiz-option:hover {
-            border-color: #B67490;
-            background: #FDF2F8;
+            border-color: #82A284;
         }
         
         .quiz-option.selected {
-            border-color: #B67490;
-            background: #FDF2F8;
-            box-shadow: 0 5px 15px rgba(182, 116, 144, 0.2);
+            border-color: #82A284;
+            border-width: 2px;
         }
         
         .progress-bar {
@@ -122,6 +162,35 @@
         .alert-info {
             background: #EFF6FF;
             color: #2563EB;
+        }
+        
+        /* Responsividade adicional */
+        @media (max-height: 844px) {
+            .min-h-screen {
+                min-height: 100vh;
+            }
+        }
+        
+        @media (max-width: 390px) {
+            .max-w-\[330px\] {
+                max-width: 90vw;
+            }
+            
+            .text-\[40px\] {
+                font-size: 36px;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .gap-\[243px\] {
+                gap: 15vh;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .gap-\[243px\] {
+                gap: 10vh;
+            }
         }
     </style>
     
