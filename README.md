@@ -70,32 +70,63 @@ http://localhost:5000
 
 ## 🚀 Deploy
 
-### **Render + Railway (Recomendado)**
+### **Railway (Recomendado - Aplicação + Banco Juntos)**
 
-#### **1. Configurar Banco PostgreSQL no Railway:**
+#### **1. Criar Projeto no Railway:**
 1. Acesse [railway.app](https://railway.app)
-2. Clique em "New Project" → "Provision PostgreSQL"
-3. Copie a URL de conexão do banco (formato: `postgresql://user:password@host:port/database`)
+2. Faça login com GitHub
+3. Clique em **"New Project"**
+4. Selecione **"Deploy from GitHub repo"**
+5. Escolha seu repositório: `quiz-beleza-que-respira`
 
-#### **2. Configurar Aplicação no Render:**
-1. Acesse [render.com](https://render.com)
-2. Clique em "New +" → "Web Service"
-3. Conecte seu repositório GitHub
-4. Configure:
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `gunicorn wsgi:app`
+#### **2. Configurar Banco PostgreSQL:**
+1. No projeto criado, clique em **"New"**
+2. Selecione **"Database"** → **"PostgreSQL"**
+3. Aguarde a criação do banco
 
-#### **3. Variáveis de Ambiente no Render:**
+#### **3. Configurar Variáveis de Ambiente:**
+1. Vá em **"Variables"** no seu projeto
+2. Adicione:
+
 ```
-DATABASE_URL=postgresql://user:password@host:port/database
 SECRET_KEY=sua_chave_secreta_muito_segura_aqui_2024
 FLASK_ENV=production
 ```
 
-#### **4. Deploy:**
-- Clique em "Create Web Service"
-- Aguarde o build (5-10 minutos)
-- Verifique os logs para confirmar que as tabelas foram criadas
+**✅ DATABASE_URL é criado automaticamente pelo Railway**
+
+#### **4. Deploy Automático:**
+- O Railway fará deploy automático a cada push
+- O banco será criado automaticamente
+- As questões serão inseridas no primeiro deploy
+
+### **Verificar Deploy:**
+1. **Logs do Railway:** Procure por:
+   - ✅ "PostgreSQL detectado - usando banco de produção"
+   - ✅ "Tabelas criadas com sucesso!"
+   - ✅ "Questões inseridas com sucesso!"
+
+2. **Testar aplicação:**
+   - Acesse o URL fornecido pelo Railway
+   - Complete o quiz para testar o banco
+
+3. **Dashboard:**
+   - Acesse: `https://seu-projeto.railway.app/dashboard`
+
+### **Vantagens do Railway:**
+- ✅ **Aplicação + Banco** em uma plataforma
+- ✅ **Dados persistentes** garantidos
+- ✅ **Deploy automático** a cada push
+- ✅ **HTTPS** automático
+- ✅ **Monitoramento** integrado
+
+### **URLs Importantes:**
+- **Railway:** `https://seu-projeto.railway.app`
+- **Dashboard:** `https://seu-projeto.railway.app/dashboard`
+
+### **Opção Alternativa: Render + SQLite**
+
+Se preferir usar Render com SQLite:
 
 ### **Verificar Deploy:**
 1. **Logs do Render:** Procure por:

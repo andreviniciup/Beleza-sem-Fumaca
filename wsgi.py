@@ -20,5 +20,6 @@ with app.app_context():
         print(f"⚠️ Erro ao inicializar banco: {e}")
         print("🔄 Tentando continuar com SQLite...")
 
+# Para o Render, usar wsgi:app
 if __name__ == "__main__":
     app.run()

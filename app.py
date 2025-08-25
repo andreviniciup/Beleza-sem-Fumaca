@@ -73,6 +73,10 @@ def resultado():
         return redirect(url_for('formulario'))
     return render_template('resultado.html')
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
 # APIs
 @app.route('/api/cadastrar_usuario', methods=['POST'])
 def cadastrar_usuario():
@@ -393,6 +397,98 @@ def visualizar_dados():
             'usuarios': usuarios_data
         })
     
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
+@app.route('/api/dados')
+def obter_dados():
+    """Endpoint para obter dados do banco"""
+    try:
+        # Contar usuários
+        total_usuarios = Usuario.query.count()
+        
+        # Contar resultados
+        total_resultados = Resultado.query.count()
+        
+        # Usuários que ganharam brinde
+        ganhadores = Resultado.query.filter_by(ganhou_brinde=True).count()
+        
+        # Média de acertos
+        resultados = Resultado.query.all()
+        if resultados:
+            media_acertos = sum(r.total_acertos for r in resultados) / len(resultados)
+        else:
+            media_acertos = 0
+        
+        # Últimos 10 resultados
+        ultimos_resultados = Resultado.query.order_by(Resultado.id.desc()).limit(10).all()
+        
+        dados = {
+            'total_usuarios': total_usuarios,
+            'total_resultados': total_resultados,
+            'ganhadores': ganhadores,
+            'media_acertos': round(media_acertos, 2),
+            'ultimos_resultados': [
+                {
+                    'id': r.id,
+                    'usuario_id': r.usuario_id,
+                    'total_acertos': r.total_acertos,
+                    'total_questoes': r.total_questoes,
+                    'ganhou_brinde': r.ganhou_brinde,
+                    'data_resultado': r.data_resultado.strftime('%d/%m/%Y %H:%M') if r.data_resultado else None
+                }
+                for r in ultimos_resultados
+            ]
+        }
+        
+        return jsonify(dados)
+        
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
+@app.route('/api/usuarios')
+def obter_usuarios():
+    """Endpoint para obter lista de usuários"""
+    try:
+        usuarios = Usuario.query.order_by(Usuario.id.desc()).limit(50).all()
+        
+        dados = [
+            {
+                'id': u.id,
+                'nome': u.nome,
+                'idade': u.idade,
+                'genero': u.genero,
+                'fonte_conhecimento': u.fonte_conhecimento,
+                'data_cadastro': u.data_cadastro.strftime('%d/%m/%Y %H:%M') if u.data_cadastro else None
+            }
+            for u in usuarios
+        ]
+        
+        return jsonify(dados)
+        
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
+@app.route('/api/resultados')
+def obter_resultados():
+    """Endpoint para obter todos os resultados"""
+    try:
+        resultados = Resultado.query.order_by(Resultado.id.desc()).limit(100).all()
+        
+        dados = [
+            {
+                'id': r.id,
+                'usuario_id': r.usuario_id,
+                'total_acertos': r.total_acertos,
+                'total_questoes': r.total_questoes,
+                'ganhou_brinde': r.ganhou_brinde,
+                'data_resultado': r.data_resultado.strftime('%d/%m/%Y %H:%M') if r.data_resultado else None
+            }
+            for r in resultados
+        ]
+        
+        return jsonify(dados)
+        
     except Exception as e:
         return jsonify({'erro': str(e)}), 500
 
