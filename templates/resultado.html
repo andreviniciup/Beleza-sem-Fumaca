@@ -30,6 +30,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Página de resultado carregada, buscando dados...');
+    
+    // Carregar sons primeiro
+    carregarSons();
+    
+    // Depois carregar resultado
     carregarResultado();
 });
 
@@ -128,32 +133,102 @@ function mostrarResultado(data) {
     }
 }
 
-function tocarSom(ganhouBrinde) {
+// Variáveis globais para áudio
+let audioVictory = null;
+let audioDefeat = null;
+let somCarregado = false;
+
+// Função para detectar se é mobile
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Função para carregar os sons
+function carregarSons() {
     try {
-        // Criar elemento de áudio
-        const audio = new Audio();
+        // Criar elementos de áudio
+        audioVictory = new Audio('/static/sounds/victory.mp3');
+        audioDefeat = new Audio('/static/sounds/defeat.mp3');
         
-        // Definir volume (0.0 a 1.0)
-        audio.volume = 0.7;
+        // Configurar volume
+        audioVictory.volume = 0.7;
+        audioDefeat.volume = 0.7;
         
-        // Escolher som baseado no resultado
-        if (ganhouBrinde) {
-            audio.src = '/static/sounds/victory.mp3';
-            console.log('🎉 Tocando som de vitória!');
-        } else {
-            audio.src = '/static/sounds/defeat.mp3';
-            console.log('😔 Tocando som de derrota!');
+        // Pré-carregar os sons
+        audioVictory.load();
+        audioDefeat.load();
+        
+        somCarregado = true;
+        console.log('✅ Sons carregados com sucesso!');
+        
+    } catch (error) {
+        console.log('⚠️ Erro ao carregar sons:', error.message);
+    }
+}
+
+// Função para tocar som
+function tocarSom(ganhouBrinde) {
+    if (!somCarregado) {
+        console.log('⚠️ Sons não carregados ainda');
+        return;
+    }
+    
+    try {
+        const audio = ganhouBrinde ? audioVictory : audioDefeat;
+        
+        if (audio) {
+            // Reset para o início
+            audio.currentTime = 0;
+            
+            // Tentar tocar
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log(ganhouBrinde ? '🎉 Som de vitória tocado!' : '😔 Som de derrota tocado!');
+                }).catch(error => {
+                    console.log('⚠️ Erro ao tocar som:', error.message);
+                    
+                    // Se for mobile, mostrar botão para ativar som
+                    if (isMobile()) {
+                        mostrarBotaoSom(ganhouBrinde);
+                    }
+                });
+            }
         }
-        
-        // Tocar o som
-        audio.play().catch(error => {
-            console.log('⚠️ Erro ao tocar som:', error.message);
-            console.log('💡 Dica: Verifique se os arquivos de som existem em static/sounds/');
-        });
         
     } catch (error) {
         console.log('⚠️ Erro ao configurar som:', error.message);
     }
+}
+
+// Função para mostrar botão de som no mobile
+function mostrarBotaoSom(ganhouBrinde) {
+    const container = document.getElementById('resultadoContainer');
+    const botaoSom = document.createElement('button');
+    
+    botaoSom.innerHTML = `
+        <div class="fixed bottom-4 right-4 bg-white bg-opacity-90 rounded-full p-3 shadow-lg z-50">
+            <div class="text-center">
+                <div class="text-2xl">🔊</div>
+                <div class="text-xs text-gray-600 mt-1">Tocar Som</div>
+            </div>
+        </div>
+    `;
+    
+    botaoSom.addEventListener('click', function() {
+        tocarSom(ganhouBrinde);
+        botaoSom.remove();
+    });
+    
+    container.appendChild(botaoSom);
+    
+    // Remover botão após 10 segundos
+    setTimeout(() => {
+        if (botaoSom.parentNode) {
+            botaoSom.remove();
+        }
+    }, 10000);
 }
 
 function mostrarErro(mensagem) {
