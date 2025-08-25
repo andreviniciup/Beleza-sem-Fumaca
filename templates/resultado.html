@@ -81,6 +81,9 @@ function mostrarResultado(data) {
     
     console.log(`Mostrando resultado: ${acertos}/${total} acertos, ganhou brinde: ${ganhouBrinde}`);
     
+    // Tocar som baseado no resultado
+    tocarSom(ganhouBrinde);
+    
     if (ganhouBrinde) {
         // Layout para quem ganhou brinde
         container.innerHTML = `
@@ -122,6 +125,34 @@ function mostrarResultado(data) {
                 </div>
             </div>
         `;
+    }
+}
+
+function tocarSom(ganhouBrinde) {
+    try {
+        // Criar elemento de áudio
+        const audio = new Audio();
+        
+        // Definir volume (0.0 a 1.0)
+        audio.volume = 0.7;
+        
+        // Escolher som baseado no resultado
+        if (ganhouBrinde) {
+            audio.src = '/static/sounds/victory.mp3';
+            console.log('🎉 Tocando som de vitória!');
+        } else {
+            audio.src = '/static/sounds/defeat.mp3';
+            console.log('😔 Tocando som de derrota!');
+        }
+        
+        // Tocar o som
+        audio.play().catch(error => {
+            console.log('⚠️ Erro ao tocar som:', error.message);
+            console.log('💡 Dica: Verifique se os arquivos de som existem em static/sounds/');
+        });
+        
+    } catch (error) {
+        console.log('⚠️ Erro ao configurar som:', error.message);
     }
 }
 
