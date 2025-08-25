@@ -34,9 +34,55 @@ document.addEventListener('DOMContentLoaded', function() {
     // Carregar sons primeiro
     carregarSons();
     
+    // Simular interação do usuário para habilitar autoplay
+    simularInteracaoUsuario();
+    
     // Depois carregar resultado
     carregarResultado();
 });
+
+// Função para simular interação do usuário
+function simularInteracaoUsuario() {
+    // Estratégia 1: Adicionar event listeners para interações
+    document.addEventListener('click', function() {
+        console.log('✅ Interação do usuário detectada - autoplay habilitado');
+        autoplayHabilitado = true;
+        
+        // Se já temos resultado, tocar som imediatamente
+        if (resultadoCarregado !== null) {
+            tocarSom(resultadoCarregado);
+        }
+    }, { once: true });
+    
+    document.addEventListener('touchstart', function() {
+        console.log('✅ Touch detectado - autoplay habilitado');
+        autoplayHabilitado = true;
+        
+        // Se já temos resultado, tocar som imediatamente
+        if (resultadoCarregado !== null) {
+            tocarSom(resultadoCarregado);
+        }
+    }, { once: true });
+    
+    // Estratégia 2: Tentar tocar um som silencioso para "ativar" o contexto de áudio
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime); // Volume 0
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.001);
+        
+        console.log('✅ Contexto de áudio ativado');
+    } catch (error) {
+        console.log('⚠️ Não foi possível ativar contexto de áudio:', error.message);
+    }
+}
 
 // Função para mostrar loading
 function mostrarLoading() {
@@ -86,8 +132,21 @@ function mostrarResultado(data) {
     
     console.log(`Mostrando resultado: ${acertos}/${total} acertos, ganhou brinde: ${ganhouBrinde}`);
     
-    // Tocar som baseado no resultado
-    tocarSom(ganhouBrinde);
+    // Salvar resultado para tocar som quando autoplay for habilitado
+    resultadoCarregado = ganhouBrinde;
+    
+    // Tocar som baseado no resultado (se autoplay já estiver habilitado)
+    if (autoplayHabilitado) {
+        tocarSom(ganhouBrinde);
+    } else {
+        // Tentar tocar automaticamente após um delay
+        setTimeout(() => {
+            if (!autoplayHabilitado) {
+                console.log('🎵 Tentando autoplay após delay...');
+                tocarSom(ganhouBrinde);
+            }
+        }, 500);
+    }
     
     if (ganhouBrinde) {
         // Layout para quem ganhou brinde
@@ -137,6 +196,8 @@ function mostrarResultado(data) {
 let audioVictory = null;
 let audioDefeat = null;
 let somCarregado = false;
+let resultadoCarregado = null;
+let autoplayHabilitado = false;
 
 // Função para detectar se é mobile
 function isMobile() {
@@ -180,19 +241,24 @@ function tocarSom(ganhouBrinde) {
             // Reset para o início
             audio.currentTime = 0;
             
-            // Tentar tocar
+            // Configurações para forçar autoplay
+            audio.muted = false;
+            audio.autoplay = true;
+            audio.preload = 'auto';
+            
+            // Tentar tocar com múltiplas estratégias
             const playPromise = audio.play();
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     console.log(ganhouBrinde ? '🎉 Som de vitória tocado!' : '😔 Som de derrota tocado!');
                 }).catch(error => {
-                    console.log('⚠️ Erro ao tocar som:', error.message);
+                    console.log('⚠️ Primeira tentativa falhou:', error.message);
                     
-                    // Se for mobile, mostrar botão para ativar som
-                    if (isMobile()) {
-                        mostrarBotaoSom(ganhouBrinde);
-                    }
+                    // Segunda tentativa: com interação simulada
+                    setTimeout(() => {
+                        tentarTocarSom(audio, ganhouBrinde);
+                    }, 100);
                 });
             }
         }
@@ -200,6 +266,39 @@ function tocarSom(ganhouBrinde) {
     } catch (error) {
         console.log('⚠️ Erro ao configurar som:', error.message);
     }
+}
+
+// Função para tentar tocar som com diferentes estratégias
+function tentarTocarSom(audio, ganhouBrinde) {
+    // Estratégia 1: Tentar novamente
+    audio.play().then(() => {
+        console.log(ganhouBrinde ? '🎉 Som de vitória tocado (2ª tentativa)!' : '😔 Som de derrota tocado (2ª tentativa)!');
+    }).catch(error => {
+        console.log('⚠️ Segunda tentativa falhou:', error.message);
+        
+        // Estratégia 2: Tentar com volume 0 e depois aumentar
+        audio.volume = 0;
+        audio.play().then(() => {
+            audio.volume = 0.7;
+            console.log(ganhouBrinde ? '🎉 Som de vitória tocado (3ª tentativa)!' : '😔 Som de derrota tocado (3ª tentativa)!');
+        }).catch(error => {
+            console.log('⚠️ Terceira tentativa falhou:', error.message);
+            
+            // Estratégia 3: Tentar com muted e depois desmutar
+            audio.muted = true;
+            audio.play().then(() => {
+                audio.muted = false;
+                console.log(ganhouBrinde ? '🎉 Som de vitória tocado (4ª tentativa)!' : '😔 Som de derrota tocado (4ª tentativa)!');
+            }).catch(error => {
+                console.log('⚠️ Todas as tentativas falharam:', error.message);
+                
+                // Última tentativa: mostrar botão apenas se for mobile
+                if (isMobile()) {
+                    mostrarBotaoSom(ganhouBrinde);
+                }
+            });
+        });
+    });
 }
 
 // Função para mostrar botão de som no mobile
