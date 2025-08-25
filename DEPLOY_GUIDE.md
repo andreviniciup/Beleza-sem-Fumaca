@@ -46,9 +46,9 @@
 2. **Adicione estas variáveis:**
 
 ```env
-DATABASE_URL=sua_url_postgresql_aqui
+DATABASE_URL=postgresql://postgres:wwjYXvxozTmWMLsFMZLpQIArZdNvtJkb@postgres.railway.internal:5432/railway
 FLASK_ENV=production
-SECRET_KEY=sua_chave_secreta_muito_segura_aqui
+SECRET_KEY=fjaofjsofajofeq0fj0qr92j0qjpqjpajfq0j0dkqfqpvjwobjskwojwvk
 ```
 
 3. **Para gerar uma SECRET_KEY segura:**
